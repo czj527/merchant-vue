@@ -38,7 +38,6 @@ export const menuItems: MenuItem[] = [
     icon: Users,
     children: [
       { title: '会员列表', path: '/members' },
-      { title: '新增会员', path: '/members/create' },
     ],
   },
   {
@@ -113,7 +112,8 @@ export const menuItems: MenuItem[] = [
 
 export const quickActions = [
   { title: '新建订单', path: '/orders/create', icon: Shirt },
-  { title: '会员录入', path: '/members/create', icon: Users },
+  { title: '会员管理', path: '/members', icon: Users },
   { title: '处理工单', path: '/tickets', icon: Headphones },
   { title: '查看趋势', path: '/workbench/merchant', icon: BarChart3 },
 ]
+
