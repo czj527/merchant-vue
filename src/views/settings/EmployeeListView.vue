@@ -1,29 +1,62 @@
-﻿<template>
-  <div>
-    <PageHeader title="员工管理" description="管理员工账号、角色和所属门店。">
-      <template #extra><el-button type="primary" @click="dialogVisible = true">新增员工</el-button></template>
-    </PageHeader>
+<template>
+  <div class="employee-page">
+    <div class="filter-card employee-filter">
+      <el-form :model="query" label-width="92px">
+        <div class="filter-grid">
+          <el-form-item label="用户名"><el-input v-model="query.userName" clearable placeholder="请输入" /></el-form-item>
+          <el-form-item label="手机号"><el-input v-model="query.phone" clearable placeholder="请输入" /></el-form-item>
+          <el-form-item label="账号类型"><el-select v-model="query.type" clearable placeholder="请选择"><el-option v-for="type in accountTypes" :key="type" :label="type" :value="type" /></el-select></el-form-item>
+          <div class="filter-actions"><el-button @click="reset">重置</el-button><el-button :loading="loading" type="primary" @click="loadEmployees">查询</el-button></div>
+        </div>
+      </el-form>
+    </div>
+
     <YxCard>
-      <el-form inline :model="query"><el-form-item label="关键词"><el-input v-model="query.keyword" placeholder="姓名/手机号" /></el-form-item><el-form-item><el-button type="primary" :loading="loading" @click="loadEmployees">查询</el-button></el-form-item></el-form>
-      <el-table :data="employees" border>
-        <el-table-column prop="name" label="姓名" width="100" />
-        <el-table-column prop="phone" label="手机号" width="130" />
-        <el-table-column prop="role" label="角色" width="120" />
-        <el-table-column prop="dept" label="部门" width="120" />
-        <el-table-column prop="status" label="状态" width="100" />
-        <el-table-column label="操作" width="140"><template #default><el-button text type="primary" @click="dialogVisible = true">编辑</el-button><el-button text type="danger">禁用</el-button></template></el-table-column>
+      <div class="page-actions"><el-button :icon="Plus" type="primary" @click="dialogVisible = true">新增员工</el-button></div>
+      <el-table :data="employees" border class="employee-table">
+        <el-table-column label="用户ID" min-width="230"><template #default="{ row }">{{ row.id }} <el-icon class="copy-icon"><CopyDocument /></el-icon></template></el-table-column>
+        <el-table-column label="用户名" min-width="180" prop="name" />
+        <el-table-column label="手机号" min-width="160" prop="phone" />
+        <el-table-column label="账号类型" min-width="160" prop="type" />
+        <el-table-column label="状态" width="120"><template #default><el-tag type="success" effect="light">启用</el-tag></template></el-table-column>
+        <el-table-column label="创建时间" min-width="180" prop="createdAt" sortable />
+        <el-table-column label="备注" min-width="150" prop="remark" />
+        <el-table-column fixed="right" label="操作" width="150"><template #default><el-button link type="primary">修改</el-button><el-button link type="danger">禁用</el-button></template></el-table-column>
       </el-table>
+      <div class="pagination-text">第 1-2 条/总共 2 条 <el-pagination layout="prev, pager, next" :total="2" :page-size="10" /></div>
     </YxCard>
-    <el-dialog v-model="dialogVisible" title="新增员工" width="620px"><el-form label-width="90px"><el-form-item label="姓名"><el-input /></el-form-item><el-form-item label="手机号"><el-input /></el-form-item><el-form-item label="员工类型"><el-select style="width:100%"><el-option label="管理员" value="admin" /><el-option label="运营" value="ops" /></el-select></el-form-item></el-form><template #footer><el-button @click="dialogVisible = false">取消</el-button><el-button type="primary" @click="dialogVisible = false">保存</el-button></template></el-dialog>
+
+    <el-dialog v-model="dialogVisible" title="新建员工账号" width="600px">
+      <el-form :model="form" :rules="rules" label-position="top">
+        <el-form-item label="员工类型" prop="type"><el-select v-model="form.type" placeholder="请选择"><el-option v-for="type in accountTypes" :key="type" :label="type" :value="type" /></el-select></el-form-item>
+        <el-form-item label="用户名" prop="userName"><el-input v-model="form.userName" placeholder="请输入" /></el-form-item>
+        <el-form-item label="密码" prop="password"><el-input v-model="form.password" show-password placeholder="请输入" /></el-form-item>
+        <el-form-item label="外呼手机号"><el-select v-model="form.callPhone" clearable placeholder="请选择"><el-option label="15257167060" value="15257167060" /></el-select></el-form-item>
+        <el-form-item label="备注"><el-input v-model="form.remark" :rows="4" type="textarea" placeholder="请输入" /></el-form-item>
+      </el-form>
+      <template #footer><el-button @click="dialogVisible = false">取消</el-button><el-button type="primary" @click="dialogVisible = false">确定</el-button></template>
+    </el-dialog>
   </div>
 </template>
+
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import PageHeader from '@/components/business/PageHeader.vue'
+import type { FormRules } from 'element-plus'
+import { CopyDocument, Plus } from '@element-plus/icons-vue'
 import YxCard from '@/components/base/YxCard.vue'
-const dialogVisible = ref(false)
+
+type EmployeeForm = { type: string; userName: string; password: string; callPhone: string; remark: string }
 const loading = ref(false)
-const query = reactive({ keyword: '' })
-const employees = [{ name: '张三', phone: '138****0001', role: '管理员', dept: '总部', status: '启用' }, { name: '李四', phone: '139****0002', role: '运营', dept: '门店', status: '启用' }]
-async function loadEmployees() { loading.value = true; try { await new Promise((resolve) => window.setTimeout(resolve, 350)) } finally { loading.value = false } }
+const dialogVisible = ref(false)
+const accountTypes = ['租户管理员', '商户员工', '工厂员工', '门店员工']
+const query = reactive({ userName: '', phone: '', type: '' })
+const form = reactive<EmployeeForm>({ type: '', userName: '', password: '', callPhone: '', remark: '' })
+const rules = reactive<FormRules<EmployeeForm>>({ type: [{ required: true, message: '请选择员工类型', trigger: 'change' }], userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }], password: [{ required: true, message: '请输入密码', trigger: 'blur' }] })
+const employees = [{ id: 'cmkp2mbew2em3prf41tm81qdu', name: '比在河北123', phone: '-', type: '商户员工', createdAt: '2026-01-22 14:28:31', remark: '-' }, { id: 'cmkqgr33e26fe1q8fhxnuvhqi', name: '盛峰雅洁清洗服务', phone: '-', type: '租户管理员', createdAt: '2026-01-16 18:34:09', remark: '-' }]
+function reset() { query.userName = ''; query.phone = ''; query.type = '' }
+function loadEmployees() { loading.value = true; window.setTimeout(() => { loading.value = false }, 300) }
 </script>
+
+<style scoped>
+.employee-filter{padding:16px 24px 4px}.filter-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:0 34px}.filter-grid :deep(.el-form-item){margin-right:0}.filter-grid :deep(.el-select){width:100%}.filter-actions{display:flex;gap:10px;padding-bottom:18px}.page-actions{display:flex;justify-content:flex-end;margin-bottom:16px}.employee-table :deep(.el-table__cell){padding:13px 0}.copy-icon{color:var(--yx-primary)}.pagination-text{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:14px}
+</style>
