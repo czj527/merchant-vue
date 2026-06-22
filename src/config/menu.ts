@@ -46,7 +46,6 @@ export const menuItems: MenuItem[] = [
     icon: ClipboardList,
     children: [
       { title: '订单列表', path: '/orders' },
-      { title: '新建订单', path: '/orders/create' },
       { title: '批量订单', path: '/orders/batch' },
     ],
   },
@@ -56,7 +55,6 @@ export const menuItems: MenuItem[] = [
     icon: Store,
     children: [
       { title: '商户列表', path: '/customers/merchants' },
-      { title: '新增商户', path: '/customers/merchants/create' },
       { title: '品牌管理', path: '/customers/brands' },
     ],
   },
@@ -111,9 +109,10 @@ export const menuItems: MenuItem[] = [
 ]
 
 export const quickActions = [
-  { title: '新建订单', path: '/orders/create', icon: Shirt },
+  { title: '订单中心', path: '/orders', icon: Shirt },
   { title: '会员管理', path: '/members', icon: Users },
   { title: '处理工单', path: '/tickets', icon: Headphones },
   { title: '查看趋势', path: '/workbench/merchant', icon: BarChart3 },
 ]
+
 
