@@ -1,0 +1,126 @@
+﻿.yx-card,
+.page-card {
+  padding: 20px;
+  background: var(--yx-card);
+  border: 1px solid var(--yx-border);
+  border-radius: var(--yx-radius-lg);
+  box-shadow: var(--yx-shadow-card);
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.page-header__title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.page-header__desc {
+  margin: 8px 0 0;
+  color: var(--yx-text-secondary);
+}
+
+.page-header__extra {
+  display: flex;
+  gap: 10px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.metric-card {
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--yx-border);
+  border-radius: var(--yx-radius-lg);
+  box-shadow: var(--yx-shadow-card);
+}
+
+.metric-card__label {
+  color: var(--yx-text-secondary);
+  font-size: 13px;
+}
+
+.metric-card__value {
+  margin-top: 10px;
+  color: var(--yx-text-primary);
+  font-size: 28px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-card__hint {
+  margin-top: 8px;
+  color: var(--yx-text-secondary);
+  font-size: 12px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 16px;
+}
+
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: #eef2f7;
+  color: var(--yx-text-regular);
+}
+
+.status-tag--primary {
+  color: var(--yx-primary);
+  background: var(--yx-primary-soft);
+}
+
+.status-tag--success {
+  color: var(--yx-success);
+  background: #eaf8f1;
+}
+
+.status-tag--warning {
+  color: var(--yx-warning);
+  background: #fff7e8;
+}
+
+.status-tag--danger {
+  color: var(--yx-danger);
+  background: #fff0f0;
+}
+
+.filter-card {
+  margin-bottom: 14px;
+  padding: 16px 16px 0;
+  background: #fff;
+  border: 1px solid var(--yx-border);
+  border-radius: var(--yx-radius-lg);
+}
+
+.placeholder-page {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  color: var(--yx-text-secondary);
+  background: #fff;
+  border: 1px dashed var(--yx-border);
+  border-radius: var(--yx-radius-lg);
+}
+
+@media (max-width: 1440px) {
+  .metric-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,20 @@
+﻿<template>
+  <div>
+    <PageHeader title="工厂产量" description="按月份、工厂和展示维度统计每日入场、预检、质检与出厂单/件数。">
+      <template #extra><el-button :loading="exportLoading" @click="exportData">导出统计</el-button></template>
+    </PageHeader>
+    <div class="filter-card capacity-filter"><el-form inline><el-form-item label="展示"><el-checkbox-group v-model="visibleMetrics"><el-checkbox label="入场单" /><el-checkbox label="预检单/件" /><el-checkbox label="质检单/件" /><el-checkbox label="出厂单/件" /></el-checkbox-group></el-form-item><el-form-item label="年月"><el-date-picker v-model="month" type="month" /></el-form-item><el-form-item label="工厂"><el-select v-model="factory" placeholder="全部工厂" clearable><el-option v-for="item in factoryNames" :key="item" :label="item" :value="item" /></el-select></el-form-item><el-form-item><el-button @click="reset">重置</el-button><el-button type="primary" :loading="loading" @click="queryData">查询</el-button></el-form-item></el-form></div>
+    <YxCard><h3>每日出厂量</h3><div class="capacity-table-wrap"><table class="capacity-table"><thead><tr><th>工厂</th><th v-for="day in days" :key="day">{{ day }}日</th><th>合计</th></tr></thead><tbody><tr v-for="row in rows" :key="row.name"><td class="factory-name">{{ row.name }}</td><td v-for="day in days" :key="day"><div v-if="row.values[day]"><p v-if="visibleMetrics.includes('入场单')">入场 <b>{{ row.values[day].in }}</b>单</p><p v-if="visibleMetrics.includes('出厂单/件')">出厂 <b>{{ row.values[day].out }}</b>单 {{ row.values[day].pieces }}件</p><p v-if="visibleMetrics.includes('预检单/件')">预检 {{ Math.max(row.values[day].in - 8, 0) }}件</p><p v-if="visibleMetrics.includes('质检单/件')">质检 {{ Math.max(row.values[day].out - 5, 0) }}件</p></div><span v-else>-</span></td><td><b>入场 {{ row.totalIn }}单</b><br /><b>出厂 {{ row.totalOut }}单</b> {{ row.totalPieces }}件</td></tr><tr class="summary-row"><td>合计</td><td v-for="day in days" :key="day">入场 {{ day * 13 % 280 + 80 }}单<br />出厂 {{ day * 11 % 240 + 70 }}单</td><td>入场 4956单<br />出厂 4940单 20037件</td></tr></tbody></table></div></YxCard>
+  </div>
+</template>
+<script setup lang="ts">
+import { reactive, ref } from 'vue'; import { ElMessage } from 'element-plus'; import PageHeader from '@/components/business/PageHeader.vue'; import YxCard from '@/components/base/YxCard.vue'
+interface DayValue { in: number; out: number; pieces: number }
+const loading=ref(false); const exportLoading=ref(false); const month=ref('2026-03'); const factory=ref(''); const visibleMetrics=ref(['入场单','出厂单/件']); const days=Array.from({length:14},(_,i)=>i+1)
+const factoryNames=['(0153)辽宁(沈阳市)-洗衣工厂','(0197)重庆(合川)-洗衣工厂','(0289)浙江(台州/仙居县/下各镇)-洗衣工厂-景德祥工艺','(0361)浙江(宁波/海曙区)-洗衣工厂','(0459)河北(廊坊/三河市)-洗衣工厂']
+const rows=reactive(factoryNames.map((name,index)=>{ const values:Record<number,DayValue>={}; let totalIn=0,totalOut=0,totalPieces=0; for(const day of days){ if(index===1 && day%2) continue; const inCount=(day*17+index*31)%180+20; const outCount=(day*13+index*19)%160+15; const pieces=outCount*4+day*3; values[day]={in:inCount,out:outCount,pieces}; totalIn+=inCount; totalOut+=outCount; totalPieces+=pieces } return {name,values,totalIn,totalOut,totalPieces} }))
+async function queryData(){ if(loading.value)return; loading.value=true; try{ await new Promise(r=>setTimeout(r,500)); ElMessage.success('查询完成') } finally{ loading.value=false } }
+function reset(){ visibleMetrics.value=['入场单','出厂单/件']; month.value='2026-03'; factory.value='' }
+async function exportData(){ if(exportLoading.value)return; exportLoading.value=true; try{ await new Promise(r=>setTimeout(r,600)); ElMessage.success('统计导出任务已创建') } finally{ exportLoading.value=false } }
+</script>
+<style scoped>.capacity-filter{padding-bottom:12px}h3{margin:0 0 14px}.capacity-table-wrap{overflow:auto}.capacity-table{min-width:1900px;width:100%;border-collapse:collapse}.capacity-table th,.capacity-table td{padding:14px 12px;border:1px solid var(--yx-border);text-align:center;vertical-align:middle}.capacity-table th{background:#fafafa}.factory-name{text-align:left!important;min-width:180px}.capacity-table p{margin:3px 0}.summary-row{font-weight:600;background:#fcfdff}</style>

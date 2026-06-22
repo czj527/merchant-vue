@@ -1,0 +1,36 @@
+﻿* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--yx-text-primary);
+  background: var(--yx-bg);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--yx-primary);
+  --el-button-border-color: var(--yx-primary);
+  --el-button-hover-bg-color: var(--yx-primary-hover);
+  --el-button-hover-border-color: var(--yx-primary-hover);
+}
